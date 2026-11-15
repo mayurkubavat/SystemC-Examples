@@ -8,6 +8,8 @@ A progressive learning path through SystemC and UVM-SystemC, from basic modules 
 - **UVM-SystemC 1.0-beta6** — [GitHub](https://github.com/accellera-official/uvm-systemc) (required for `projects/`)
 - **CMake 3.14+**
 - **C++17 compiler** (g++ or clang++)
+- **CRAVE** *(optional)* — [GitHub](https://github.com/accellera-official/crave), constrained-random stimulus (`projects/crave_rand`)
+- **FC4SC** *(optional)* — [GitHub](https://github.com/accellera-official/fc4sc), functional coverage (`projects/fc4sc_cov`)
 - **Verilator 5+** *(optional)* — for RTL co-simulation
 - **GTKWave** *(optional)* — for viewing VCD waveforms
 
@@ -29,6 +31,16 @@ make
 cmake .. -DSYSTEMC_HOME=/path/to/systemc -DUVM_SYSTEMC_HOME=/path/to/uvm-systemc
 make
 ```
+
+### With constrained-random and coverage examples
+
+```bash
+cmake .. -DSYSTEMC_HOME=/path/to/systemc -DUVM_SYSTEMC_HOME=/path/to/uvm-systemc \
+         -DCRAVE_HOME=/path/to/crave -DFC4SC_HOME=/path/to/fc4sc
+make
+```
+
+Each of `projects/crave_rand` and `projects/fc4sc_cov` is built only when its library is found.
 
 ### With RTL DUT (via Verilator)
 
@@ -143,6 +155,24 @@ sc_main (top.cpp)
 - AXI4-Lite valid/ready handshake protocol
 - Cross-project component reuse (APB agent shared between projects)
 
+### 6. Constrained-Random Stimulus with CRAVE (`projects/crave_rand`)
+
+UVM-SystemC has no `randomize()`. CRAVE adds a constraint solver, and its `crave2uvm` adapter provides `uvm_randomized_sequence_item`. The ALU transaction declares `crv_variable` fields (SV `rand`) and `crv_constraint` members (SV `constraint`), for example "never divide by zero" and "no underflow on SUB". One sequence uses `randomize()`, another adds inline constraints with `randomize_with()` (SV `` `uvm_do_with``). The driver acts as a reference model and flags any item that breaks a constraint.
+
+```bash
+./build/projects/crave_rand/crave_rand_sim        # random seed
+./build/projects/crave_rand/crave_rand_sim 1234   # reproducible seed
+```
+
+### 7. Functional Coverage with FC4SC (`projects/fc4sc_cov`)
+
+FC4SC brings SV-style covergroups to C++: `COVERPOINT`, `bin`, `bin_array`, `illegal_bin`, and `cross`. A `uvm_subscriber` samples a covergroup for every bus transaction, checks a 100% coverage goal in `report_phase`, and writes the results as UCIS XML, the Accellera coverage interchange format.
+
+```bash
+./build/projects/fc4sc_cov/fc4sc_cov_sim [seed]
+# writes fc4sc_cov_results.xml in the working directory
+```
+
 ## Project Structure
 
 ```
@@ -167,6 +197,8 @@ projects/
     sequences/           DMA transfer sequences (reuses APB transactions)
     test/                UVM test classes
     top/                 Top-level entry point (sc_main)
+  crave_rand/            CRAVE constrained-random stimulus (uvm_randomized_sequence_item)
+  fc4sc_cov/             FC4SC functional coverage with UCIS XML output
 cmake/                   CMake modules (FindSystemC)
 docs/plans/              Design and implementation documents
 ```
