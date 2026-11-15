@@ -12,3 +12,5 @@ target_link_libraries(fc4sc_cov_sim PRIVATE
     SystemC::uvm
     FC4SC::fc4sc
 )
+
+add_uvm_test(fc4sc_cov_sim)

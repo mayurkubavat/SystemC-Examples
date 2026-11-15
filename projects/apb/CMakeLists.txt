@@ -28,3 +28,5 @@ if(USE_RTL)
 else()
     message(STATUS "APB: using SystemC model DUT")
 endif()
+
+add_uvm_test(sim)

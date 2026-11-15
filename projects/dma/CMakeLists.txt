@@ -33,3 +33,5 @@ if(USE_RTL)
 else()
     message(STATUS "DMA: using SystemC model DUT")
 endif()
+
+add_uvm_test(dma_sim)

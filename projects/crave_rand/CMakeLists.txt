@@ -12,3 +12,5 @@ target_link_libraries(crave_rand_sim PRIVATE
     SystemC::uvm
     crave2uvm::crave2uvm
 )
+
+add_uvm_test(crave_rand_sim)

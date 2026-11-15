@@ -5,7 +5,7 @@ A progressive learning path through SystemC and UVM-SystemC, from basic modules 
 ## Prerequisites
 
 - **SystemC 3.0+** — [Accellera download](https://systemc.org/downloads/standards/)
-- **UVM-SystemC 1.0-beta6** — [GitHub](https://github.com/accellera-official/uvm-systemc) (required for `projects/`)
+- **UVM-SystemC 1.0-beta6 or later** — [GitHub](https://github.com/accellera-official/uvm-systemc) (required for `projects/`)
 - **CMake 3.14+**
 - **C++17 compiler** (g++ or clang++)
 - **CRAVE** *(optional)* — [GitHub](https://github.com/accellera-official/crave), constrained-random stimulus (`projects/crave_rand`)
@@ -13,7 +13,7 @@ A progressive learning path through SystemC and UVM-SystemC, from basic modules 
 - **Verilator 5+** *(optional)* — for RTL co-simulation
 - **GTKWave** *(optional)* — for viewing VCD waveforms
 
-> **macOS ARM64 note:** UVM-SystemC `configure.ac` does not yet support Apple Silicon out of the box. A 4-line patch is needed — see [accellera-official/uvm-systemc#346](https://github.com/accellera-official/uvm-systemc/issues/346).
+> **macOS ARM64 note:** build UVM-SystemC with its CMake flow; that needs no patch on Apple Silicon. Only the older autotools `configure` flow needs the change described in [accellera-official/uvm-systemc#346](https://github.com/accellera-official/uvm-systemc/issues/346).
 
 ## Build
 
@@ -41,6 +41,14 @@ make
 ```
 
 Each of `projects/crave_rand` and `projects/fc4sc_cov` is built only when its library is found.
+
+### Run the regression
+
+Every example and testbench that was built is registered as a ctest test. A UVM testbench fails its test when the report summary counts a `UVM_ERROR` or `UVM_FATAL`.
+
+```bash
+ctest --test-dir build --output-on-failure
+```
 
 ### With RTL DUT (via Verilator)
 
