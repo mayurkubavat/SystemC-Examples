@@ -26,6 +26,7 @@ public:
   void body() {
     unsigned seed = 1;
     uvm::uvm_config_db<unsigned>::get(nullptr, "", "seed", seed);
+    uvm::uvm_config_db<unsigned>::get(nullptr, "", "num_items", num_items);
     std::mt19937 rng(seed);
     std::uniform_int_distribution<int> cmd_d(BUS_READ, BUS_WRITE);
     std::uniform_int_distribution<int> addr_d(0, 255);

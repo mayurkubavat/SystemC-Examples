@@ -177,9 +177,19 @@ UVM-SystemC has no `randomize()`. CRAVE adds a constraint solver, and its `crave
 FC4SC brings SV-style covergroups to C++: `COVERPOINT`, `bin`, `bin_array`, `illegal_bin`, and `cross`. A `uvm_subscriber` samples a covergroup for every bus transaction, checks a 100% coverage goal in `report_phase`, and writes the results as UCIS XML, the Accellera coverage interchange format.
 
 ```bash
-./build/projects/fc4sc_cov/fc4sc_cov_sim [seed]
+./build/projects/fc4sc_cov/fc4sc_cov_sim [seed] [num_items] [goal]
 # writes fc4sc_cov_results.xml in the working directory
 ```
+
+**Coverage regression.** One long run is not how coverage is closed in practice: many short runs with different seeds are merged. `scripts/cov_regress.py` runs the simulation once per seed, merges the UCIS XML files with [pyucis](https://github.com/fvutils/pyucis) (`pip install pyucis`) and prints the merged report. FC4SC itself cannot merge runs.
+
+```bash
+scripts/cov_regress.py build                      # 16 seeds, 8 items each
+scripts/cov_regress.py build --seeds 4 --items 6  # too few: reports the holes, exits 1
+# writes build/cov_regress/seed_<n>/fc4sc_cov_results.xml and build/cov_regress/merged.xml
+```
+
+The covergroup sets `cross_num_print_missing`, so the cross bins which were not hit are written as well. Cross coverage is only right with an FC4SC that names the cross bins in the XML file (the `development` branch of [mayurkubavat/fc4sc](https://github.com/mayurkubavat/fc4sc)); upstream FC4SC writes them without names, and UCIS tools then count the whole cross as one bin.
 
 ## Project Structure
 

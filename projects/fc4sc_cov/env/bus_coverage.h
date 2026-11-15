@@ -40,7 +40,13 @@ public:
   int addr = 0;
   int len = 0;
 
-  CG_CONS(bus_cg) {}
+  CG_CONS(bus_cg) {
+    // Also write the cross bins which were not hit to the UCIS XML file
+    // (up to this number). A tool which reads or merges the file only
+    // knows the bins it finds there, so without them it would report
+    // 100% cross coverage as soon as one bin was hit.
+    cmd_x_len.option().cross_num_print_missing = 100;
+  }
 
   void sample(const bus_item& item) {
     cmd = item.cmd;
@@ -94,6 +100,7 @@ public:
        << " total=" << cg.get_inst_coverage() << "%";
     UVM_INFO(get_name(), ss.str(), uvm::UVM_LOW);
 
+    uvm::uvm_config_db<double>::get(nullptr, "", "goal", goal);
     if (cg.get_inst_coverage() < goal) {
       UVM_ERROR(get_name(), "coverage goal not met");
     }
