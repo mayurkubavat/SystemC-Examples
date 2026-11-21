@@ -22,3 +22,11 @@ if(FC4SC_FOUND)
 else()
     message(STATUS "FC4SC not found — skipping projects/fc4sc_cov. Set FC4SC_HOME to enable.")
 endif()
+
+find_package(verilator QUIET)
+if(verilator_FOUND AND crave2uvm_FOUND AND FC4SC_FOUND AND
+   EXISTS "${UVM_SystemC_INCLUDE_DIR}/uvmsc/reg/uvm_fc4sc_reg_cvr.h")
+    add_subdirectory(verilator_apb_timer)
+else()
+    message(STATUS "Verilator + CRAVE + FC4SC + UVM FC4SC RAL bridge not all found — skipping projects/verilator_apb_timer.")
+endif()

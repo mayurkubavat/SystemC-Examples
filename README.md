@@ -191,6 +191,15 @@ scripts/cov_regress.py build --seeds 4 --items 6  # too few: reports the holes, 
 
 The covergroup sets `cross_num_print_missing`, so the cross bins which were not hit are written as well. Cross coverage is only right with an FC4SC that names the cross bins in the XML file (the `development` branch of [mayurkubavat/fc4sc](https://github.com/mayurkubavat/fc4sc)); upstream FC4SC writes them without names, and UCIS tools then count the whole cross as one bin.
 
+### 8. Full-Stack RTL Closure (`projects/verilator_apb_timer`)
+
+Combines Verilator SystemC RTL co-simulation (`apb_timer.sv`), UVM-SystemC RAL with automatic FC4SC register/bit/address-map covergroups (`uvm_fc4sc_reg_block`), CRAVE constrained-random sequence items (`uvm_randomized_sequence_item` + `analyse_contradiction()` / `inactive_soft_constraints()`), typed Verilator C++ register backdoors (`uvm_cpp_reg_backdoor`), and strict UCIS 1.0 XML output. Optional fault-injected RTL binaries (`verilator_apb_timer_bug1..3`) evaluate bug-detection latency across W1C, prescaler, and periodic-reload defects.
+
+```bash
+./build/projects/verilator_apb_timer/verilator_apb_timer_sim --mode crave --seed 1
+./build/projects/verilator_apb_timer/verilator_apb_timer_sim --mode unconstrained --seed 1
+```
+
 ## Project Structure
 
 ```
@@ -217,6 +226,7 @@ projects/
     top/                 Top-level entry point (sc_main)
   crave_rand/            CRAVE constrained-random stimulus (uvm_randomized_sequence_item)
   fc4sc_cov/             FC4SC functional coverage with UCIS XML output
+  verilator_apb_timer/   Full-stack Verilator RTL + UVM RAL + CRAVE + FC4SC closure
 cmake/                   CMake modules (FindSystemC)
 docs/plans/              Design and implementation documents
 ```
